@@ -35,3 +35,73 @@
 //     select title from role table (provides a list of roles)
 //     ask user what is the new role 
 //     update the role of the employee selected
+
+var mysql = require("mysql");
+var inquirer = require("inquirer");
+
+// create the connection information for the sql database
+var connection = mysql.createConnection({
+  host: "localhost",
+
+  // Your port; if not 3306
+  port: 3306,
+
+  // Your username
+  user: "root",
+
+  // Your password
+  password: "",
+  database: "businessDB"
+});
+
+// connect to the mysql server and sql database
+connection.connect(function(err) {
+  if (err) throw err;
+  // run the start function after the connection is made to prompt the user
+  start();
+});
+
+function start() {
+    inquirer
+      .prompt({
+        name: "businessChoice",
+        type: "list",
+        message: "Which would you like to do?",
+        choices: ["View Departments", "View Roles", "View Employees", "Add Department", "Add Role", "Add Employee", "Update Employee"]
+      })
+      .then(function(answer) {
+        // based on their answer, either call the bid or the post functions
+        if (answer.businessChoice === "View Departments") {
+          showDepartments();
+        }
+        else if(answer.businessChoice === "View Roles") {
+          showRoles();
+        } 
+        else if(answer.businessChoice === "View Employees") {
+            showEmployees();
+        }else{
+          connection.end();
+        }
+      });
+  }
+  function showDepartments(){
+    connection.query("SELECT * FROM department", function(err, results) {
+        console.table(results);
+        start();
+    })
+  }
+  function showRoles(){
+    connection.query("SELECT * FROM role", function(err, results) {
+        console.table(results);
+        start();
+    })
+  }
+  function showEmployees(){
+    connection.query("SELECT * FROM employee", function(err, results) {
+        console.table(results);
+        start();
+    })
+  }
+  function addDepartment(){
+      connection.query("INSERT INTO department")
+  }
